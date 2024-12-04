@@ -152,7 +152,7 @@ namespace ImprovedAutoSlaughter
 
         private static long ProductiveAgeIndex( Pawn p )
         {
-            double f = 0.75;
+            double f = ImprovedAutoSlaughterMod.settings.oldLifeExpectancyThreshold / 100f;
             // Animals that are above the age threshold go first, oldest first.
             if( p.ageTracker.AgeBiologicalTicks > p.RaceProps.lifeExpectancy * GenDate.TicksPerYear * f )
                 return p.ageTracker.AgeBiologicalTicks - ( long )( p.RaceProps.lifeExpectancy * GenDate.TicksPerYear * f );
