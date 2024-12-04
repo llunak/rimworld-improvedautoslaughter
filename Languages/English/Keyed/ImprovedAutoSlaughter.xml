@@ -4,4 +4,12 @@
   <ImprovedAutoSlaughter.AnimalMaleTotal>Male total</ImprovedAutoSlaughter.AnimalMaleTotal>
   <ImprovedAutoSlaughter.AnimalFemaleTotal>Female total</ImprovedAutoSlaughter.AnimalFemaleTotal>
 
+  <!-- Needs to fit 2 lines -->
+  <ImprovedAutoSlaughter.Tip>Old animals are slaughtered first from oldest to youngest, then other animals from youngest to oldest, then pregnant animals from most recent to least recent pregnancy.</ImprovedAutoSlaughter.Tip>
+
+  <ImprovedAutoSlaughter.HeaderTooltipCurrentMalesYoung>The current number of all males in the colony.</ImprovedAutoSlaughter.HeaderTooltipCurrentMalesYoung>
+  <ImprovedAutoSlaughter.HeaderTooltipMaxMalesYoung>The maximum number of all males in the colony.\n\nHandlers will automatically slaughter any extras.</ImprovedAutoSlaughter.HeaderTooltipMaxMalesYoung>
+  <ImprovedAutoSlaughter.HeaderTooltipCurrentFemalesYoung>The current number of all females in the colony.</ImprovedAutoSlaughter.HeaderTooltipCurrentFemalesYoung>
+  <ImprovedAutoSlaughter.HeaderTooltipMaxFemalesYoung>The maximum number of all females in the colony.\n\nHandlers will automatically slaughter any extras.</ImprovedAutoSlaughter.HeaderTooltipMaxFemalesYoung>
+
 </LanguageData>
