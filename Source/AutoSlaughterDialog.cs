@@ -9,12 +9,58 @@ namespace ImprovedAutoSlaughter
     [HarmonyPatch(typeof(Dialog_AutoSlaughter))]
     public static class Dialog_AutoSlaughter_Patch
     {
+        // Postfix for computing totals.
         [HarmonyPostfix]
         [HarmonyPatch(nameof(CountPlayerAnimals))]
         public static void CountPlayerAnimals(int currentMales, ref int currentMalesYoung, int currentFemales, ref int currentFemalesYoung)
         {
             currentMalesYoung += currentMales;
             currentFemalesYoung += currentFemales;
+        }
+
+        // Transpiller for disabling filtering out bonded and pregnant animals.
+        [HarmonyTranspiler]
+        [HarmonyPatch(nameof(CountPlayerAnimals))]
+        public static IEnumerable<CodeInstruction> CountPlayerAnimals(IEnumerable<CodeInstruction> instructions)
+        {
+            var codes = new List<CodeInstruction>(instructions);
+            bool foundBond = false;
+            bool foundPregnant = false;
+            for( int i = 0; i < codes.Count; ++i )
+            {
+                // Log.Message("T:" + i + ":" + codes[i].opcode + "::" + (codes[i].operand != null ? codes[i].operand.ToString() : codes[i].operand));
+                // The function has code:
+                // if (!config.allowSlaughterBonded)
+                //     continue;
+                // Make the condition always false.
+                if( !foundBond
+                    && codes[ i ].IsLdarg()
+                    && i + 2 < codes.Count
+                    && codes[ i + 1 ].opcode == OpCodes.Ldfld && codes[ i + 1 ].operand.ToString() == "System.Boolean allowSlaughterBonded"
+                    && codes[ i + 2 ].opcode == OpCodes.Brfalse )
+                {
+                    codes.RemoveRange( i, 3 );
+                    foundBond = true;
+                    --i; // Fix 'i' to point after the removed code for the next iteration.
+                }
+                // The function has code:
+                // if (!config.allowSlaughterPregnant)
+                //     continue;
+                // Make the condition always false.
+                if( !foundPregnant
+                    && codes[ i ].IsLdarg()
+                    && i + 2 < codes.Count
+                    && codes[ i + 1 ].opcode == OpCodes.Ldfld && codes[ i + 1 ].operand.ToString() == "System.Boolean allowSlaughterPregnant"
+                    && codes[ i + 2 ].opcode == OpCodes.Brfalse_S )
+                {
+                    codes.RemoveRange( i, 3 );
+                    foundPregnant = true;
+                    --i; // Fix 'i' to point after the removed code for the next iteration.
+                }
+            }
+            if( !foundBond || !foundPregnant )
+                Log.Error("ImprovedAutoSlaughter: Failed to patch Dialog_AutoSlaughter.CountPlayerAnimals()");
+            return codes;
         }
 
         [HarmonyTranspiler]
