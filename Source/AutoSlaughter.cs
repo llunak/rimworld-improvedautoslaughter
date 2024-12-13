@@ -14,6 +14,11 @@ namespace ImprovedAutoSlaughter
     [HarmonyPatch(typeof(AutoSlaughterManager))]
     public static class AutoSlaughterManager_Patch
     {
+        private static int totalNoSlaughter; // Prevented by SlaughterComponent.noAutoSlaughter.
+        private static int totalNoSlaughterMales;
+        private static int totalNoSlaughterMalesAdult;
+        private static int totalNoSlaughterFemales;
+        private static int totalNoSlaughterFemalesAdult;
         private static int totalBonded;
         private static int totalBondedMales;
         private static int totalBondedMalesAdult;
@@ -28,6 +33,7 @@ namespace ImprovedAutoSlaughter
         {
             var codes = new List<CodeInstruction>(instructions);
             bool foundClear = false;
+            bool foundCanSlaughter = false;
             bool foundBond = false;
             bool foundMales = false;
             bool foundFemales = false;
@@ -64,12 +70,23 @@ namespace ImprovedAutoSlaughter
                     foundClear = true;
                 }
                 // The function has code:
+                // CanAutoSlaughterNow(spawnedColonyAnimal)
+                // Change to:
+                // AnimalsToSlaughter_HookCanSlaughter(spawnedColonyAnimal)
+                if( foundClear && !foundCanSlaughter
+                    && codes[ i ].opcode == OpCodes.Call && codes[ i ].operand.ToString() == "Boolean CanAutoSlaughterNow(Verse.Pawn)" )
+                {
+                    codes[ i ] = new CodeInstruction( OpCodes.Call,
+                        typeof( AutoSlaughterManager_Patch ).GetMethod( nameof( AnimalsToSlaughter_HookCanSlaughter )));
+                    foundCanSlaughter = true;
+                }
+                // The function has code:
                 // (!config.allowSlaughterBonded && spawnedColonyAnimal.relations.GetDirectRelationsCount(PawnRelationDefOf.Bond) > 0)
                 // Change to:
                 // (!config.allowSlaughterBonded && AnimalsToSlaughter_HookBonded(
                 //      spawnedColonyAnimal.relations.GetDirectRelationsCount(PawnRelationDefOf.Bond) > 0, spawnedColonyAnimal))
                 // I.e. if bonded animals are not to be slaughtered, count them in order to add the count later to the limit checking.
-                if( foundClear && !foundBond
+                if( foundCanSlaughter && !foundBond
                     && codes[ i ].IsLdloc()
                     && i + 6 < codes.Count
                     && codes[ i + 1 ].opcode == OpCodes.Ldfld && codes[ i + 1 ].operand.ToString() == "RimWorld.Pawn_RelationsTracker relations"
@@ -278,7 +295,7 @@ namespace ImprovedAutoSlaughter
                 }
 #endif
             }
-            if( !foundClear || !foundBond || !foundMales || !foundFemales || !foundPregnant || !foundSort || !foundTotalPregnant
+            if( !foundClear || !foundCanSlaughter || !foundBond || !foundMales || !foundFemales || !foundPregnant || !foundSort || !foundTotalPregnant
                 || !foundMaxFemales || !foundMaxFemalesTotal || !foundMaxMales || !foundMaxMalesTotal || !foundMaxTotal )
             {
                 Log.Error("ImprovedAutoSlaughter: Failed to patch AutoSlaughterManager.AnimalsToSlaughter()");
@@ -288,12 +305,46 @@ namespace ImprovedAutoSlaughter
 
         public static void AnimalsToSlaughter_HookClear()
         {
+            totalNoSlaughter = 0;
+            totalNoSlaughterMales = 0;
+            totalNoSlaughterMalesAdult = 0;
+            totalNoSlaughterFemales = 0;
+            totalNoSlaughterFemalesAdult = 0;
             totalBonded = 0;
             totalBondedMales = 0;
             totalBondedMalesAdult = 0;
             totalBondedFemales = 0;
             totalBondedFemalesAdult = 0;
             totalPregnant = 0;
+        }
+
+        // Intentionally patch the place that calls this function rather than
+        // adding a postfix to the function. This ensures that our code will be called last,
+        // making it possible to other mods to modify the function without affecting
+        // this functionality, regardless of mod order.
+        // That will prevent animals skipped by those mods to be included in the counts though,
+        // so this is mainly for things like alien animals or whatever, not for duplicating
+        // functionality of this mod.
+        public static bool AnimalsToSlaughter_HookCanSlaughter( Pawn animal )
+        {
+            if( !AutoSlaughterManager.CanAutoSlaughterNow( animal ))
+                return false;
+            if( !Current.Game.GetComponent< SlaughterComponent >().preventAutoSlaughter( animal ))
+                return true;
+            ++totalNoSlaughter;
+            if ( animal.gender == Gender.Male )
+            {
+                ++totalNoSlaughterMales;
+                if ( animal.ageTracker.CurLifeStage.reproductive )
+                    ++totalNoSlaughterMalesAdult;
+            }
+            else
+            {
+                ++totalNoSlaughterFemales;
+                if ( animal.ageTracker.CurLifeStage.reproductive )
+                    ++totalNoSlaughterFemalesAdult;
+            }
+            return false;
         }
 
         public static bool AnimalsToSlaughter_HookBond( bool bonded, Pawn animal )
@@ -335,7 +386,7 @@ namespace ImprovedAutoSlaughter
         }
 
         public static void AnimalsToSlaughter_HookSort( List< Pawn > tmpAnimals, List< Pawn > tmpAnimalsMale,
-            List< Pawn > tmpAnimalsMaleYoung, List< Pawn > tmpAnimalsFemale,  List< Pawn > tmpAnimalsFemaleYoung )
+            List< Pawn > tmpAnimalsMaleYoung, List< Pawn > tmpAnimalsFemale, List< Pawn > tmpAnimalsFemaleYoung )
         {
             tmpAnimals.SortByDescending( ( Pawn p ) => ProductiveAgeIndex( p ));
             tmpAnimalsMale.SortByDescending( ( Pawn p ) => ProductiveAgeIndex( p ));
