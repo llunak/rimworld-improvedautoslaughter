@@ -223,7 +223,7 @@ namespace ImprovedAutoSlaughter
                     && codes[ i + 3 ].opcode == OpCodes.Ldfld && codes[ i + 3 ].operand.ToString() == "System.Int32 maxFemales"
                     && codes[ i + 4 ].opcode == OpCodes.Bgt_S )
                 {
-                    codes.Insert( i + 4, new CodeInstruction( OpCodes.Call,
+                    codes.Insert( i + 2, new CodeInstruction( OpCodes.Call,
                         typeof( AutoSlaughterManager_Patch ).GetMethod( nameof( AnimalsToSlaughter_HookFemales ))));
                     foundMaxFemales = true;
                 }
@@ -236,7 +236,7 @@ namespace ImprovedAutoSlaughter
                     && codes[ i + 3 ].opcode == OpCodes.Ldfld && codes[ i + 3 ].operand.ToString() == "System.Int32 maxFemalesYoung"
                     && codes[ i + 4 ].opcode == OpCodes.Bgt_S )
                 {
-                    codes.Insert( i + 4, new CodeInstruction( OpCodes.Call,
+                    codes.Insert( i + 2, new CodeInstruction( OpCodes.Call,
                         typeof( AutoSlaughterManager_Patch ).GetMethod( nameof( AnimalsToSlaughter_HookFemalesTotal ))));
                     foundMaxFemalesTotal = true;
                 }
@@ -249,7 +249,7 @@ namespace ImprovedAutoSlaughter
                     && codes[ i + 3 ].opcode == OpCodes.Ldfld && codes[ i + 3 ].operand.ToString() == "System.Int32 maxMales"
                     && codes[ i + 4 ].opcode == OpCodes.Bgt_S )
                 {
-                    codes.Insert( i + 4, new CodeInstruction( OpCodes.Call,
+                    codes.Insert( i + 2, new CodeInstruction( OpCodes.Call,
                         typeof( AutoSlaughterManager_Patch ).GetMethod( nameof( AnimalsToSlaughter_HookMales ))));
                     foundMaxMales = true;
                 }
@@ -262,7 +262,7 @@ namespace ImprovedAutoSlaughter
                     && codes[ i + 3 ].opcode == OpCodes.Ldfld && codes[ i + 3 ].operand.ToString() == "System.Int32 maxMalesYoung"
                     && codes[ i + 4 ].opcode == OpCodes.Bgt_S )
                 {
-                    codes.Insert( i + 4, new CodeInstruction( OpCodes.Call,
+                    codes.Insert( i + 2, new CodeInstruction( OpCodes.Call,
                         typeof( AutoSlaughterManager_Patch ).GetMethod( nameof( AnimalsToSlaughter_HookMalesTotal ))));
                     foundMaxMalesTotal = true;
                 }
@@ -275,7 +275,7 @@ namespace ImprovedAutoSlaughter
                     && codes[ i + 3 ].opcode == OpCodes.Ldfld && codes[ i + 3 ].operand.ToString() == "System.Int32 maxTotal"
                     && codes[ i + 4 ].opcode == OpCodes.Bgt ) // No _S here.
                 {
-                    codes.Insert( i + 4, new CodeInstruction( OpCodes.Call,
+                    codes.Insert( i + 2, new CodeInstruction( OpCodes.Call,
                         typeof( AutoSlaughterManager_Patch ).GetMethod( nameof( AnimalsToSlaughter_HookTotal ))));
                     foundMaxTotal = true;
                 }
