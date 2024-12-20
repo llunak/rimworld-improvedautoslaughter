@@ -349,9 +349,10 @@ namespace ImprovedAutoSlaughter
 
         public static bool AnimalsToSlaughter_HookBond( bool bonded, Pawn animal )
         {
+            // This function is only called if slaughtering of bonded is not allowed.
             if( !bonded )
                 return false;
-            ++totalBonded;
+            ++totalBonded; // Bonded still need to be included in counts.
             if ( animal.gender == Gender.Male )
             {
                 ++totalBondedMales;
@@ -367,11 +368,12 @@ namespace ImprovedAutoSlaughter
             return true;
         }
 
-        public static bool AnimalsToSlaughter_HookPregnant( bool pregnant )
+        public static bool AnimalsToSlaughter_HookPregnant( bool allowSlaughterPregnant )
         {
-            if( !pregnant )
-                return false;
-            ++totalPregnant;
+            // This function is always called if pregnant.
+            if( allowSlaughterPregnant )
+                return true;
+            ++totalPregnant; // If slaughtering of pregnant is not allowed, they still need to be included in counts.
             return false;
         }
 
