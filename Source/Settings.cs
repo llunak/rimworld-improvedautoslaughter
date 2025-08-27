@@ -5,7 +5,7 @@ namespace ImprovedAutoSlaughter
 {
     public class Settings : ModSettings
     {
-        const int defValue = 80; // %
+        const int defValue = 100; // %
 
         public int oldLifeExpectancyThreshold = defValue;
 
