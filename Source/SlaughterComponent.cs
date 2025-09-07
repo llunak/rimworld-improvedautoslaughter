@@ -34,6 +34,12 @@ namespace ImprovedAutoSlaughter
         {
         }
 
+        public void Remove( Pawn animal )
+        {
+            noAutoSlaughter.Remove( animal );
+            priorityAutoSlaughter.Remove( animal );
+        }
+
         public override void ExposeData()
         {
             base.ExposeData();
