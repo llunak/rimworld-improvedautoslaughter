@@ -6,6 +6,7 @@ namespace ImprovedAutoSlaughter
     public class SlaughterComponent : GameComponent
     {
         public HashSet< Pawn > noAutoSlaughter = new HashSet< Pawn >();
+        public HashSet< Pawn > priorityAutoSlaughter = new HashSet< Pawn >();
 
         public bool preventAutoSlaughter( Pawn animal )
         {
@@ -18,6 +19,17 @@ namespace ImprovedAutoSlaughter
                 noAutoSlaughter.Add( animal );
         }
 
+        public bool preferAutoSlaughter( Pawn animal )
+        {
+            return priorityAutoSlaughter.Contains( animal );
+        }
+
+        public void flipPreferAutoSlaughter( Pawn animal )
+        {
+            if( !priorityAutoSlaughter.Remove( animal ))
+                priorityAutoSlaughter.Add( animal );
+        }
+
         public SlaughterComponent( Game game )
         {
         }
@@ -26,6 +38,7 @@ namespace ImprovedAutoSlaughter
         {
             base.ExposeData();
             Scribe_Collections.Look(ref noAutoSlaughter, "ImprovedAutoSlaughter.NoAutoSlaughter", LookMode.Reference);
+            Scribe_Collections.Look(ref priorityAutoSlaughter, "ImprovedAutoSlaughter.PriorityAutoSlaughter", LookMode.Reference);
         }
     }
 }

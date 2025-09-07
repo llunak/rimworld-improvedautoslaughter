@@ -30,6 +30,19 @@ namespace ImprovedAutoSlaughter
                 pawn.Map?.autoSlaughterManager?.Notify_ConfigChanged();
             };
             yield return action;
+
+            action = new Command_Toggle();
+            action.defaultLabel = "ImprovedAutoSlaughter.PriorityAutoSlaughterLabel".Translate();
+            action.defaultDesc = "ImprovedAutoSlaughter.PriorityAutoSlaughterDesc".Translate();
+            action.icon = ContentFinder<Texture2D>.Get("UI/Designators/PriorityAutoSlaughter");
+            action.hotKey = KeyBindingDefOf.Misc12;
+            action.isActive = () => Current.Game.GetComponent< SlaughterComponent >().preferAutoSlaughter( pawn );
+            action.toggleAction = delegate
+            {
+                Current.Game.GetComponent< SlaughterComponent >().flipPreferAutoSlaughter( pawn );
+                pawn.Map?.autoSlaughterManager?.Notify_ConfigChanged();
+            };
+            yield return action;
         }
     }
 }

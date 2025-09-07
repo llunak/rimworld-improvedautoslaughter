@@ -377,24 +377,28 @@ namespace ImprovedAutoSlaughter
             return false;
         }
 
-        private static long ProductiveAgeIndex( Pawn p )
+        private static long ProductiveAgeIndex( Pawn p, SlaughterComponent component )
         {
+            long index = 0;
+            if( component.preferAutoSlaughter( p ))
+                index += long.MaxValue / 10;
             double f = ImprovedAutoSlaughterMod.settings.oldLifeExpectancyThreshold / 100f;
             // Animals that are above the age threshold go first, oldest first.
             if( p.ageTracker.AgeBiologicalTicks > p.RaceProps.lifeExpectancy * GenDate.TicksPerYear * f )
-                return p.ageTracker.AgeBiologicalTicks - ( long )( p.RaceProps.lifeExpectancy * GenDate.TicksPerYear * f );
+                return index + p.ageTracker.AgeBiologicalTicks - ( long )( p.RaceProps.lifeExpectancy * GenDate.TicksPerYear * f );
             // The rest go youngest first.
-            return -p.ageTracker.AgeBiologicalTicks;
+            return index - p.ageTracker.AgeBiologicalTicks;
         }
 
         public static void AnimalsToSlaughter_HookSort( List< Pawn > tmpAnimals, List< Pawn > tmpAnimalsMale,
             List< Pawn > tmpAnimalsMaleYoung, List< Pawn > tmpAnimalsFemale, List< Pawn > tmpAnimalsFemaleYoung )
         {
-            tmpAnimals.SortByDescending( ( Pawn p ) => ProductiveAgeIndex( p ));
-            tmpAnimalsMale.SortByDescending( ( Pawn p ) => ProductiveAgeIndex( p ));
-            tmpAnimalsMaleYoung.SortByDescending( ( Pawn p ) => ProductiveAgeIndex( p ));
-            tmpAnimalsFemale.SortByDescending( ( Pawn p ) => ProductiveAgeIndex( p ));
-            tmpAnimalsFemaleYoung.SortByDescending( ( Pawn p ) => ProductiveAgeIndex( p ));
+            SlaughterComponent component = Current.Game.GetComponent< SlaughterComponent >();
+            tmpAnimals.SortByDescending( ( Pawn p ) => ProductiveAgeIndex( p, component ));
+            tmpAnimalsMale.SortByDescending( ( Pawn p ) => ProductiveAgeIndex( p, component ));
+            tmpAnimalsMaleYoung.SortByDescending( ( Pawn p ) => ProductiveAgeIndex( p, component ));
+            tmpAnimalsFemale.SortByDescending( ( Pawn p ) => ProductiveAgeIndex( p, component ));
+            tmpAnimalsFemaleYoung.SortByDescending( ( Pawn p ) => ProductiveAgeIndex( p, component ));
         }
 
         public static int AnimalsToSlaughter_HookFemales( int count )

@@ -16,6 +16,9 @@
   <ImprovedAutoSlaughter.OldLifeExpectancyThresholdTooltip>Specifies a percentage of animal's life expectancy as the threshold when the animal is considered to be too old and prioritized for slaughtering.</ImprovedAutoSlaughter.OldLifeExpectancyThresholdTooltip>
 
   <ImprovedAutoSlaughter.NoAutoSlaughterLabel>No auto slaughter</ImprovedAutoSlaughter.NoAutoSlaughterLabel>
-  <ImprovedAutoSlaughter.NoAutoSlaughterDesc>If marked, this animal will not be auto-slaughtered.\nIt will still be included in counting.</ImprovedAutoSlaughter.NoAutoSlaughterDesc>
+  <ImprovedAutoSlaughter.NoAutoSlaughterDesc>If marked, this animal will not be auto-slaughtered.\n\nIt will still be included in counting.</ImprovedAutoSlaughter.NoAutoSlaughterDesc>
+
+  <ImprovedAutoSlaughter.PriorityAutoSlaughterLabel>Priority auto slaughter</ImprovedAutoSlaughter.PriorityAutoSlaughterLabel>
+  <ImprovedAutoSlaughter.PriorityAutoSlaughterDesc>If marked, this animal will be selected first when auto slaughter takes place, if allowed.</ImprovedAutoSlaughter.PriorityAutoSlaughterDesc>
 
 </LanguageData>
