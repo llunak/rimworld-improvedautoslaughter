@@ -18,6 +18,19 @@ namespace ImprovedAutoSlaughter
             Pawn pawn = __instance;
             if( !pawn.RaceProps.Animal || pawn.Faction != Faction.OfPlayer )
                 yield break;
+            // Do not show the gizmos if no auto slaughter is configured for this animal kind.
+            if( pawn.Map?.autoSlaughterManager == null )
+                yield break;
+            AutoSlaughterConfig config = pawn.Map.autoSlaughterManager.configs.Find(
+                c => c.animal == pawn.def );
+            if( config == null )
+                yield break;
+            // Do not use AnyLimit, it also checks pregnant and bonded, and returns true by default.
+            if( config.maxTotal == -1 && config.maxMales == -1 && config.maxFemales == -1
+                && config.maxMalesYoung == -1 && config.maxFemalesYoung == -1 )
+            {
+                yield break;
+            }
             Command_Toggle action = new Command_Toggle();
             action.defaultLabel = "ImprovedAutoSlaughter.NoAutoSlaughterLabel".Translate();
             action.defaultDesc = "ImprovedAutoSlaughter.NoAutoSlaughterDesc".Translate();
