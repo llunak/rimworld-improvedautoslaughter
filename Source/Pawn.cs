@@ -59,8 +59,8 @@ namespace ImprovedAutoSlaughter
         }
 
         [HarmonyPostfix]
-        [HarmonyPatch(nameof(DeSpawn))]
-        public static void DeSpawn( Pawn __instance )
+        [HarmonyPatch(nameof(Destroy))]
+        public static void Destroy( Pawn __instance )
         {
             Current.Game.GetComponent< SlaughterComponent >().Remove( __instance );
         }
